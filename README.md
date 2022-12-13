@@ -10,6 +10,15 @@ The [ziglings](https://github.com/ratfactor/ziglings) repository defines a build
 
 ## Code Problems
 
-| name                    | src                                                      | run           | description                                                                |
-|-------------------------|----------------------------------------------------------|---------------|----------------------------------------------------------------------------|
-| Day 1: Calorie Counting | [01_calorie_counting.zig](./src/01_calorie_counting.zig) | `zig build 1` | [https://adventofcode.com/2022/day/1](https://adventofcode.com/2022/day/1) |
+### Day 1: Calorie Counting
+
+Problem description: [https://adventofcode.com/2022/day/1](https://adventofcode.com/2022/day/1)
+
+Source: [01_calorie_counting.zig](./src/01_calorie_counting.zig)
+
+Solve:
+
+```sh
+zig build 1
+zig build 1 -- part2
+```
