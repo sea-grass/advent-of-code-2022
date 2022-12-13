@@ -60,25 +60,25 @@ pub fn main() !void {
 
     switch (problem) {
         .part1 => {
-            const sample_calory_count = get_max_calory_count(sample_input);
+            const sample_calory_count = getMaxCaloryCount(sample_input);
             const expected_calory_count = std.fmt.parseInt(u32, std.mem.trimRight(u8, sample_output, "\n"), 10) catch unreachable;
             if (sample_calory_count != expected_calory_count) unreachable;
 
-            const max_calory_count = get_max_calory_count(input);
+            const max_calory_count = getMaxCaloryCount(input);
             try stdout.print("{d}\n", .{max_calory_count});
         },
         .part2 => {
-            const sample_sum_max_calory_count = get_sum_max_calory_count(sample_input, 3);
+            const sample_sum_max_calory_count = getSumMaxCaloryCount(sample_input, 3);
             const expected_sum_calory_count = std.fmt.parseInt(u32, std.mem.trimRight(u8, sample_part2_output, "\n"), 10) catch unreachable;
             if (sample_sum_max_calory_count != expected_sum_calory_count) unreachable;
 
-            const sum_max_calory_count = get_sum_max_calory_count(input, 3);
+            const sum_max_calory_count = getSumMaxCaloryCount(input, 3);
             try stdout.print("{d}\n", .{sum_max_calory_count});
         },
     }
 }
 
-fn get_max_calory_count(elf_inventory: []const u8) u32 {
+fn getMaxCaloryCount(elf_inventory: []const u8) u32 {
     var max_calory_count: u32 = 0;
     var inventory_it = inventory(elf_inventory);
     while (inventory_it.next()) |calory_count| {
@@ -88,7 +88,7 @@ fn get_max_calory_count(elf_inventory: []const u8) u32 {
     return max_calory_count;
 }
 
-fn get_sum_max_calory_count(elf_inventory: []const u8, comptime num_sums: u32) u32 {
+fn getSumMaxCaloryCount(elf_inventory: []const u8, comptime num_sums: u32) u32 {
     var max_calory_counts = [_]u32{0} ** (num_sums + 1);
     var inventory_it = inventory(elf_inventory);
     while (inventory_it.next()) |calory_count| {
