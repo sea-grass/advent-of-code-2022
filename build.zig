@@ -24,6 +24,9 @@ const problems = [_]Problem{
     .{
         .main_file = "01_calorie_counting.zig",
     },
+    .{
+        .main_file = "02_rock_paper_scissors.zig",
+    },
 };
 
 pub fn build(b: *std.build.Builder) void {
