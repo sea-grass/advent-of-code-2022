@@ -22,3 +22,16 @@ Solve:
 zig build 1
 zig build 1 -- part2
 ```
+
+### Day 2: Rock Paper Scissors
+
+Problem description: [https://adventofcode.com/2022/day/1](https://adventofcode.com/2022/day/2)
+
+Source: [02_calorie_counting.zig](./src/02_calorie_counting.zig)
+
+Solve:
+
+```sh
+zig build 2
+zig build 2 -- part2
+```
