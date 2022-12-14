@@ -48,3 +48,16 @@ Solve:
 zig build 3
 zig build 3 -- part2
 ```
+
+### Day 4: Camp Cleanup
+
+Problem description: [https://adventofcode.com/2022/day/4](https://adventofcode.com/2022/day/4)
+
+Source: [04_rucksack_reorganization.zig](./src/04_camp_cleanup.zig)
+
+Solve:
+
+```sh
+zig build 4
+zig build 4 -- part2
+```
