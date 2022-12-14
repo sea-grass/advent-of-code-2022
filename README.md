@@ -27,11 +27,24 @@ zig build 1 -- part2
 
 Problem description: [https://adventofcode.com/2022/day/1](https://adventofcode.com/2022/day/2)
 
-Source: [02_calorie_counting.zig](./src/02_calorie_counting.zig)
+Source: [02_rock_paper_scissors.zig](./src/02_rock_paper_scissors.zig)
 
 Solve:
 
 ```sh
 zig build 2
 zig build 2 -- part2
+```
+
+### Day 3: Rucksack Reorganization
+
+Problem description: [https://adventofcode.com/2022/day/3](https://adventofcode.com/2022/day/3)
+
+Source: [03_rucksack_reorganization.zig](./src/03_rucksack_reorganization.zig)
+
+Solve:
+
+```sh
+zig build 3
+zig build 3 -- part2
 ```

@@ -20,6 +20,14 @@
 // results in a worst case of O(n^2). This is a toy program, however, so if it works, it works.
 //
 // I'll need to convert each character into the decimal representation to get its priority.
+//
+// The part2 problem:
+// We need to identify the item common between each group of three rucksacks, compute that priority,
+// and print out the sum.
+//
+// The approach:
+// Again, brute force beckons. We can solve this with a triple-nested for loop. We'll also use the
+// LineIterator a bit differently, pulling out three lines at a time.
 
 const std = @import("std");
 const LineIterator = @import("util.zig").LineIterator;
@@ -29,6 +37,14 @@ const sample_input = @embedFile(name ++ "/sample-input.txt");
 const sample_output = @embedFile(name ++ "/sample-output.txt");
 const sample_part2_output = @embedFile(name ++ "/sample-part2-output.txt");
 const input = @embedFile(name ++ "/input.txt");
+
+fn getItemPriority(item: u8) u8 {
+    return switch (item) {
+        'a'...'z' => |x| x - 96,
+        'A'...'Z' => |x| x - 38,
+        else => unreachable,
+    };
+}
 
 pub fn main() !void {
     const stdout = std.io.getStdOut().writer();
@@ -57,8 +73,12 @@ pub fn main() !void {
             try stdout.print("{d}\n", .{total_priority});
         },
         .part2 => {
-            // todo: part2
-            unreachable;
+            const sample_total_priority = getTotalBadgePriority(sample_input);
+            const expected_priority = std.fmt.parseInt(u32, std.mem.trimRight(u8, sample_part2_output, "\n"), 10) catch unreachable;
+            if (sample_total_priority != expected_priority) unreachable;
+
+            const total_priority = getTotalBadgePriority(input);
+            try stdout.print("{d}\n", .{total_priority});
         },
     }
 }
@@ -72,11 +92,11 @@ fn getTotalPriority(rucksacks: []const u8) u32 {
         var first_compartment = rucksack[0 .. rucksack.len / 2];
         var second_compartment = rucksack[rucksack.len / 2 ..];
         const item_priority: u8 = blk: {
-            for (first_compartment) |item| for (second_compartment) |other_item| if (item == other_item) break :blk switch (item) {
-                'a'...'z' => |x| x - 96,
-                'A'...'Z' => |x| x - 38,
-                else => unreachable,
-            };
+            for (first_compartment) |item| {
+                for (second_compartment) |other_item| {
+                    if (item == other_item) break :blk getItemPriority(item);
+                }
+            }
             unreachable;
         };
 
@@ -85,3 +105,46 @@ fn getTotalPriority(rucksacks: []const u8) u32 {
 
     return total_priority;
 }
+
+fn getTotalBadgePriority(rucksacks: []const u8) u32 {
+    var badge_it: BadgeIterator = .{ .rucksacks = rucksacks };
+    var total_priority: u32 = 0;
+
+    while (badge_it.next()) |badge_item| {
+        total_priority += getItemPriority(badge_item);
+    }
+
+    return total_priority;
+}
+
+const BadgeIterator = struct {
+    lines_it: ?LineIterator = null,
+    rucksacks: []const u8,
+    done: bool = false,
+
+    pub fn next(self: *@This()) ?u8 {
+        if (self.done) unreachable;
+        if (self.lines_it == null) self.lines_it = .{ .lines = self.rucksacks };
+
+        const first = self.lines_it.?.next() orelse {
+            self.done = true;
+            return null;
+        };
+
+        const rucksacks = .{
+            first,
+            self.lines_it.?.next() orelse unreachable,
+            self.lines_it.?.next() orelse unreachable,
+        };
+
+        for (rucksacks[0]) |a| {
+            for (rucksacks[1]) |b| {
+                for (rucksacks[2]) |c| {
+                    if (a == b and a == c) return a;
+                }
+            }
+        }
+
+        unreachable;
+    }
+};
