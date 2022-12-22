@@ -36,6 +36,9 @@ const problems = [_]Problem{
     .{
         .main_file = "05_supply_stacks.zig",
     },
+    .{
+        .main_file = "06_tuning_trouble.zig",
+    },
 };
 
 pub fn build(b: *std.build.Builder) void {
