@@ -125,7 +125,17 @@ pub fn main() !void {
         },
         .part2 => {
             // part 2
-            unreachable;
+            var buffer: [9]u8 = undefined;
+
+            const sample_stack_summary = try getEfficientStackSummary(&buffer, allocator, sample_input);
+            const expected_stack_summary = std.mem.trimRight(u8, sample_part2_output, "\n");
+            if (!std.mem.eql(u8, sample_stack_summary, expected_stack_summary)) {
+                std.debug.print("stacks({s}) != expected({s})\n", .{ sample_stack_summary, expected_stack_summary });
+                unreachable;
+            }
+
+            const stack_summary = try getEfficientStackSummary(&buffer, allocator, input);
+            try stdout.print("{s}\n", .{stack_summary});
         },
     }
 }
@@ -186,6 +196,79 @@ fn getStackSummary(buffer: []u8, allocator: std.mem.Allocator, stack_data: []con
         var i: usize = 0;
         while (i < num) : (i += 1) {
             stacks[dest - 1].push(stacks[source - 1].pop());
+        }
+    }
+
+    for (stacks) |s, i| {
+        buffer.ptr[i] = s.peek();
+    }
+
+    return buffer[0..num_stacks];
+}
+
+fn getEfficientStackSummary(buffer: []u8, allocator: std.mem.Allocator, stack_data: []const u8) ![]const u8 {
+    var parts = std.mem.split(u8, stack_data, "\n\n");
+
+    const diagram = parts.next() orelse unreachable;
+    var diagram_it: LineIterator = .{ .lines = diagram, .backwards = true };
+
+    const num_stacks = stacks: {
+        const line = diagram_it.next() orelse unreachable;
+        break :stacks try std.fmt.parseInt(u32, line[line.len - 2 .. line.len - 1], 10);
+    };
+
+    var stacks = try allocator.alloc(Stack, num_stacks);
+    defer allocator.free(stacks);
+
+    for (stacks) |*s| {
+        s.array_list = ArrayList(u8).init(allocator);
+    }
+
+    defer {
+        for (stacks) |*s| {
+            s.array_list.deinit();
+        }
+    }
+
+    while (diagram_it.next()) |line| {
+        var i: usize = 0;
+        while (i < num_stacks) : (i += 1) {
+            const column_size: usize = 3;
+            const offset = i * column_size + i;
+            const item = line[offset .. offset + column_size];
+            if (item[0] == '[' and item[2] == ']') {
+                stacks[i].push(item[1]);
+            } else if (!std.mem.eql(u8, item, "   ")) unreachable;
+        }
+    }
+
+    const instructions = parts.next() orelse unreachable;
+    var instructions_it: LineIterator = .{ .lines = instructions };
+    while (instructions_it.next()) |instruction| {
+        var instruction_parts: std.mem.TokenIterator(u8) = .{ .buffer = instruction, .delimiter_bytes = " ", .index = 0 };
+
+        // "move X from Y to Z"
+        if (!std.mem.eql(u8, "move", instruction_parts.next() orelse unreachable)) unreachable;
+        const num = std.fmt.parseInt(u32, instruction_parts.next() orelse unreachable, 10) catch unreachable;
+
+        if (!std.mem.eql(u8, "from", instruction_parts.next() orelse unreachable)) unreachable;
+        const source = std.fmt.parseInt(u32, instruction_parts.next() orelse unreachable, 10) catch unreachable;
+
+        if (!std.mem.eql(u8, "to", instruction_parts.next() orelse unreachable)) unreachable;
+        const dest = std.fmt.parseInt(u32, instruction_parts.next() orelse unreachable, 10) catch unreachable;
+
+        if (instruction_parts.next()) |_| unreachable;
+
+        var items = try allocator.alloc(u8, num);
+        defer allocator.free(items);
+
+        var i: usize = 0;
+        while (i < num) : (i += 1) {
+            items[i] = stacks[source - 1].pop();
+        }
+        i = num;
+        while (i > 0) : (i -= 1) {
+            stacks[dest - 1].push(items[i - 1]);
         }
     }
 
