@@ -7,9 +7,14 @@
 // This is a substring search problem. We'll create a slice of length 4 at each
 // index and check that slice for uniqueness. Once we find the target slice,
 // we can output the start index where it occurs in the string.
+//
+// Part 2 problem:
+// Same problem, but with a unique character count of 14 instead of 4.
+//
+// The approach:
+// Change the const from 4 to 14.
 
 const std = @import("std");
-const LineIterator = @import("util.zig").LineIterator;
 
 const name = "06_tuning_trouble";
 const sample_input = @embedFile(name ++ "/sample-input.txt");
@@ -36,24 +41,35 @@ pub fn main() !void {
 
     switch (problem) {
         .part1 => {
-            const sample_index = findSubstringIndex(sample_input) orelse unreachable;
+            const target_len = 4;
+
+            const sample_index = findSubstringIndex(sample_input, target_len) orelse unreachable;
             const expected_index = std.fmt.parseInt(usize, std.mem.trimRight(u8, sample_output, "\n"), 10) catch unreachable;
             if (sample_index != expected_index) {
                 std.debug.print("sample_index({d}) != expected_index({d})\n", .{ sample_index, expected_index });
                 unreachable;
             }
 
-            const substring_index = findSubstringIndex(input) orelse unreachable;
+            const substring_index = findSubstringIndex(input, target_len) orelse unreachable;
             try stdout.print("{d}\n", .{substring_index});
         },
         .part2 => {
-            unreachable;
+            const target_len = 14;
+
+            const sample_index = findSubstringIndex(sample_input, target_len) orelse unreachable;
+            const expected_index = std.fmt.parseInt(usize, std.mem.trimRight(u8, sample_part2_output, "\n"), 10) catch unreachable;
+            if (sample_index != expected_index) {
+                std.debug.print("sample_index({d}) != expected_index({d})\n", .{ sample_index, expected_index });
+                unreachable;
+            }
+
+            const substring_index = findSubstringIndex(input, target_len) orelse unreachable;
+            try stdout.print("{d}\n", .{substring_index});
         },
     }
 }
 
-fn findSubstringIndex(string: []const u8) ?usize {
-    const seq_len = 4;
+fn findSubstringIndex(string: []const u8, seq_len: usize) ?usize {
     const start_index: ?usize = substr: {
         loop: for (string) |_, i| {
             if (i + seq_len >= string.len) break;
